@@ -3,8 +3,6 @@ import pygame
 
 class Display:
 
-
-    CELLWIDTH = 60
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
     RED = (255, 0, 0)
@@ -25,7 +23,7 @@ class Display:
         self.DISPLAYSURF.fill(self.BGCOLOR)
 
         #Draw Basket
-        basketRect = pygame.Rect(basket.basketx, basket.baskety, self.CELLWIDTH, 6)
+        basketRect = pygame.Rect(basket.basketx, basket.baskety, basket.cellWidth, 6)
         pygame.draw.rect(self.DISPLAYSURF, self.DARKGREEN, basketRect)
 
         #Draw EggSet

@@ -33,17 +33,13 @@ class NeuralNest:
             action = user.get_player_action()
             if action == 'quit':
                 return
-
             basket.update(action)
-
             eggSet.update()
-
             if eggSet.eggs_were_broken:
                 return
+            else:
+                eggSet.launch_more_eggs()
 
-            if eggSet.activeEggs() < 10 and eggSet.getHighestEgg().eggy > 220:
-                eggSet.addEgg(randint(20,620), 20)
-            #eggDropper.update(eggSet)
             display.update(basket, eggSet, eggDropper)
 
 neuralNest = NeuralNest()

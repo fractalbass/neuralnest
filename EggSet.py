@@ -1,4 +1,4 @@
-
+from random import randint
 
 class EggSet:
 
@@ -42,6 +42,11 @@ class EggSet:
         for egg in self.eggs:
             if egg.broken:
                 self.eggs.remove(egg)
+
+    def launch_more_eggs(self):
+        if self.activeEggs() < 10 and self.getHighestEgg().eggy > 220:
+            self.addEgg(randint(20, 620), 20)
+
 
 class Egg:
 
