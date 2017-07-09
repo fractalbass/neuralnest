@@ -1,13 +1,19 @@
 from random import randint
+from random import randrange
 
 class EggSet:
 
     eggs = []
 
-    def __init__(self, basket):
+    def __init__(self, basket, dropHeight, waveCount, minSpeed, maxSpeed):
         self.basket = basket
+        self.waveCount = waveCount
         self.eggs_were_broken = False
         self.eggs_were_caught = False
+        self.dropHeight = 240
+        self.minSpeed = minSpeed
+        self.maxSpeed = maxSpeed
+        self.totalDropped = 0
 
     def activeEggs(self):
         return len(self.eggs)
@@ -22,8 +28,9 @@ class EggSet:
                 highestEgg = egg
         return highestEgg
 
-    def addEgg(self, eggx, eggy):
-        egg = Egg(eggx, eggy, self.basket)
+    def addEgg(self, eggx, eggy, minSpeed, maxSpeed):
+        self.totalDropped = self.totalDropped + 1
+        egg = Egg(eggx, eggy, self.basket, minSpeed, maxSpeed)
         self.eggs.append(egg)
 
     def update(self):
@@ -44,13 +51,16 @@ class EggSet:
                 self.eggs.remove(egg)
 
     def launch_more_eggs(self):
-        if self.activeEggs() < 10 and self.getHighestEgg().eggy > 220:
-            self.addEgg(randint(20, 620), 20)
+        if self.totalDropped < self.waveCount and self.activeEggs() < 3 and self.getHighestEgg().eggy > self.dropHeight:
+            self.addEgg(randint(200, 440), 20, self.minSpeed, self.maxSpeed)
 
+    def wave_over(self):
+        return self.totalDropped >= self.waveCount and len(self.eggs) == 0
 
 class Egg:
 
-    def __init__(self, eggx, eggy, basket):
+    def __init__(self, eggx, eggy, basket, minSpeed, maxSpeed):
+        self.eggSpeed = minSpeed + (randint(0,10)/10.0 * (maxSpeed - minSpeed))
         self.eggx = eggx
         self.eggy = eggy
         self.basket = basket
@@ -59,7 +69,7 @@ class Egg:
 
     def update(self):
         if not self.broken:
-            self.eggy = self.eggy + 1
+            self.eggy = self.eggy + self.eggSpeed
             if self.eggy > self.basket.baskety:
                 print("Egg Broken:  Egg at ({0},{1})  and basket at ({2},{3}) - ({4},{5})".format(self.eggx, self.eggy,
                                                                                                   self.basket.basketx,
