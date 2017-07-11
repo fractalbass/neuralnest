@@ -1,5 +1,7 @@
 import pygame
 import datetime
+import numpy as np
+
 class Display:
 
     WHITE = (255, 255, 255)
@@ -11,12 +13,15 @@ class Display:
     BGCOLOR = BLACK
     BLACK = (0,0,0)
 
-    def __init__(self, window_width, window_height, cell_width):
+    def __init__(self, window_width, window_height, surface_width, surface_height, cell_width):
+        pygame.display.init()
         self.window_width = window_width
         self.cell_width = cell_width
+        self.surface_width = surface_width
+        self.surface_height = surface_height
         self.window_height = window_height
-        self.display_surface = pygame.surface.Surface((80,80))
-        self.display_window = pygame.display.set_mode((800,800),0,24)
+        self.display_surface = pygame.surface.Surface((surface_width,surface_height))
+        self.display_window = pygame.display.set_mode((window_width,window_height),0,24)
         pygame.display.set_caption('NeuralNest')
         self.display_surface.fill(self.BGCOLOR)
         pygame.display.update()
@@ -40,7 +45,7 @@ class Display:
         return True
 
     def update_display(self):
-        self.display_window.blit(pygame.transform.scale(self.display_surface, (800, 800)), (0, 0))
+        self.display_window.blit(pygame.transform.scale(self.display_surface, (self.window_width, self.window_height)), (0, 0))
         pygame.display.update()
 
     def draw_circle(self, x, y, radius, color, width):
@@ -49,6 +54,14 @@ class Display:
     def draw_box(self, x, y, width, height, color):
         basket_rect = pygame.Rect((x, y), (width, height))
         pygame.draw.rect(self.display_surface, color, basket_rect)
+
+    def draw_checkerboard(self, x, y, width, height, c1, c2):
+        for xi in range(x, x + width):
+            for yi in range(y, y + height):
+                c = c1
+                if (xi + yi) % 2 == 0:
+                    c = c2
+                self.draw_box(xi, yi, 1, 1, c)
 
     def show_wave_start(self, wave):
         if wave is None:
@@ -72,8 +85,8 @@ class Display:
 
     def display_text_middle(self, msg):
         self.display_surface.fill(self.BGCOLOR)
-        self.score_text = pygame.font.Font("/Library/Fonts/Courier New.ttf", 18)
-        text_surf, text_rect = self.text_objects(msg, self.score_text)
+        score_text = pygame.font.Font("/Library/Fonts/Courier New.ttf", 18)
+        text_surf, text_rect = self.text_objects(msg, score_text)
         text_rect.center = ((self.window_width / 2), (self.window_height / 2))
         self.display_surface.blit(text_surf, text_rect)
         self.update_display()
@@ -88,3 +101,22 @@ class Display:
                     return
             if (datetime.datetime.utcnow() - start).total_seconds() > 3:
                 return
+
+    def get_surface_array(self):
+        self.update_display()
+        surface_array = pygame.surfarray.array3d(self.display_surface)
+        return np.reshape(surface_array, (self.surface_width*self.surface_height, 3))
+
+    def get_surface_matrix(self):
+        self.update_display()
+        surface_array = pygame.surfarray.array3d(self.display_surface)
+        return surface_array
+
+    def get_surface_grayscale_array(self):
+        gray_scale_array = []
+        surface_array = pygame.surfarray.array3d(self.display_surface)
+        new_surface = np.reshape(surface_array, (self.surface_width * self.surface_height, 3))
+        for x in new_surface:
+            c = int(((int(x[0])+int(x[1])+int(x[2]))/(255*3))*255)
+            gray_scale_array.append(c)
+        return gray_scale_array
