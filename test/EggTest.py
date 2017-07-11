@@ -9,12 +9,14 @@ import unittest
 from EggSet import Egg
 from EggSet import EggSet
 from Basket import Basket
+from Display import Display
 
 class EggTest(unittest.TestCase):
 
     def test_break_an_egg(self):
-        basket = Basket(640, 480, 40)
-        egg = Egg(320, 10, basket)
+        display = Display(80,80,20)
+        basket = Basket(display)
+        egg = Egg(40, 10, basket, 1, 2)
 
         while not egg.broken:
             egg.update()
@@ -22,9 +24,10 @@ class EggTest(unittest.TestCase):
         self.assertTrue(egg.eggy>basket.baskety)
 
     def test_break_some_eggs(self):
-        basket = Basket(640, 480, 40)
-        eggSet = EggSet(basket)
-        eggSet.addEgg(10,10)
+        display = Display(80,80,20)
+        basket = Basket(display)
+        eggSet = EggSet(None, basket,20,10,1,1,2)
+        eggSet.addEgg(10)
         eggCount = 0
         self.assertTrue(not eggSet.empty())
         self.assertTrue(not eggSet.eggs_were_broken)
@@ -33,7 +36,7 @@ class EggTest(unittest.TestCase):
             eggSet.update()
             eggSet.remove_broken_eggs()
             if eggCount < 100:
-                eggSet.addEgg(320,10)
+                eggSet.addEgg(10)
                 eggCount = eggCount + 1
 
         print("Egg count: {0}".format(eggCount))
@@ -43,9 +46,10 @@ class EggTest(unittest.TestCase):
         self.assertTrue(not eggSet.eggs_were_caught)
 
     def test_catch_an_egg(self):
-        basket = Basket(640,480,40)
-        eggSet = EggSet(basket)
-        eggSet.addEgg(330,10)
+        display = Display(80,80,20)
+        basket = Basket(display)
+        eggSet = EggSet(None, basket, 20, 10, 1, 1, 2)
+        eggSet.addEgg(45)
         self.assertTrue(not eggSet.empty())
         self.assertTrue(not eggSet.eggs_were_broken)
         self.assertTrue(not eggSet.eggs_were_caught)
@@ -58,11 +62,19 @@ class EggTest(unittest.TestCase):
         self.assertTrue(eggSet.eggs_were_caught)
 
     def test_get_highest_egg(self):
-        basket = Basket(640,480,40)
-        eggSet = EggSet(basket)
-        eggSet.addEgg(330,10)
-        eggSet.addEgg(330, 20)
-        eggSet.addEgg(330, 30)
+        display = Display(80,80,20)
+        basket = Basket(display)
+        eggSet = EggSet(None, basket,20,10,1,1,2)
+
+        eggSet.addEgg(10)
+        for x in range(0,10):
+            eggSet.update()
+
+        eggSet.addEgg(20)
+        for x in range(0, 10):
+            eggSet.update()
+
+        eggSet.addEgg(30)
 
         self.assertTrue(eggSet.getHighestEgg().eggy == 10)
 
