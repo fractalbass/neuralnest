@@ -3,8 +3,8 @@ import pygame
 class Basket:
 
     def __init__(self, display):
-        self.windowWidth = display.window_width
-        self.windowHeight = display.window_height
+        self.windowWidth = display.surface_width
+        self.windowHeight = display.surface_height
         self.cellWidth = display.cell_width
         self.basketx = int(self.windowWidth / 2.0)
         self.baskety = int(self.windowHeight * 0.9)

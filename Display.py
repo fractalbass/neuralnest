@@ -12,6 +12,7 @@ class Display:
     DARKGRAY = (40, 40, 40)
     BGCOLOR = BLACK
     BLACK = (0,0,0)
+    text_surface_height = 20
 
     def __init__(self, window_width, window_height, surface_width, surface_height, cell_width):
         pygame.display.init()
@@ -20,8 +21,9 @@ class Display:
         self.surface_width = surface_width
         self.surface_height = surface_height
         self.window_height = window_height
+        self.text_surface = pygame.surface.Surface((window_width, self.text_surface_height), 0, 24)
         self.display_surface = pygame.surface.Surface((surface_width,surface_height))
-        self.display_window = pygame.display.set_mode((window_width,window_height),0,24)
+        self.display_window = pygame.display.set_mode((window_width,window_height), 0, 24)
         pygame.display.set_caption('NeuralNest')
         self.display_surface.fill(self.BGCOLOR)
         pygame.display.update()
@@ -36,7 +38,7 @@ class Display:
         # Draw EggSet
         if egg_set is not None:
             for egg in egg_set.eggs:
-                self.draw_circle(egg.eggx, egg.eggy, 3, self.WHITE, 1)
+                self.draw_box(egg.eggx, egg.eggy, egg.egg_radius, egg.egg_radius, self.WHITE)
 
             # Display score
             self.display_text_top("{0}:{1}".format(egg_set.total_caught, egg_set.total_broken))
@@ -45,7 +47,9 @@ class Display:
         return True
 
     def update_display(self):
-        self.display_window.blit(pygame.transform.scale(self.display_surface, (self.window_width, self.window_height)), (0, 0))
+        self.display_window.blit(pygame.transform.scale(self.display_surface, (self.window_width, self.window_height +
+                                                                               self.text_surface_height)), (0, self.text_surface_height))
+        self.display_window.blit(self.text_surface, (0, 0))
         pygame.display.update()
 
     def draw_circle(self, x, y, radius, color, width):
@@ -79,16 +83,18 @@ class Display:
         return text_surface, text_surface.get_rect()
 
     def display_text_top(self, msg):
-        score_text = pygame.font.Font("/Library/Fonts/Courier New.ttf", 12)
+        self.text_surface.fill(self.BGCOLOR)
+        score_text = pygame.font.Font("/Library/Fonts/Courier New.ttf", 18)
         scoreSurf, scoreRect = self.text_objects(msg, score_text)
-        self.display_surface.blit(scoreSurf, scoreRect)
+        self.text_surface.blit(scoreSurf, scoreRect)
 
     def display_text_middle(self, msg):
-        self.display_surface.fill(self.BGCOLOR)
+        self.text_surface.fill(self.BGCOLOR)
         score_text = pygame.font.Font("/Library/Fonts/Courier New.ttf", 18)
         text_surf, text_rect = self.text_objects(msg, score_text)
-        text_rect.center = ((self.window_width / 2), (self.window_height / 2))
-        self.display_surface.blit(text_surf, text_rect)
+        text_rect.center = ((self.window_width / 2), 5)
+        text_rect.top = 2
+        self.text_surface.blit(text_surf, text_rect)
         self.update_display()
         self.wait_for_key()
 
@@ -117,6 +123,6 @@ class Display:
         surface_array = pygame.surfarray.array3d(self.display_surface)
         new_surface = np.reshape(surface_array, (self.surface_width * self.surface_height, 3))
         for x in new_surface:
-            c = int(((int(x[0])+int(x[1])+int(x[2]))/(255*3))*255)
+            c = ((int(x[0])+int(x[1])+int(x[2]))/(255*3))
             gray_scale_array.append(c)
-        return gray_scale_array
+        return np.array(gray_scale_array, dtype=float)

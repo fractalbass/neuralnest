@@ -5,34 +5,39 @@ class EggSet:
 
     eggs = []
 
-    def __init__(self, observer, basket, drop_threshold, drop_height, wave_count, min_speed, max_speed):
-        self.observer = observer
-        self.basket = basket
-        self.waveCount = wave_count
-        self.eggs_were_broken = False
-        self.eggs_were_caught = False
-        self.dropThreshold = drop_threshold
-        self.dropHeight = drop_height
-        self.minSpeed = min_speed
-        self.maxSpeed = max_speed
-        self.totalDropped = 0
-        self.total_broken = 0
-        self.total_caught = 0
+    observer = None
+    basket = None
+    wave_count = -1
+    eggs_were_broken = False
+    eggs_were_caught = False
+    drop_threshold = None
+    drop_height = None
+    min_speed = None
+    max_speed = None
+    egg_radius = None
+    total_dropped = 0
+    total_broken = 0
+    total_caught = 0
+    egg_radius = 0
 
-    def activeEggs(self):
+    def __init__(self, **kwargs):  #observer, basket, drop_threshold, drop_height, wave_count, min_speed, max_speed):
+        for (k, v) in kwargs.items():
+            setattr(self, k, v)
+        
+    def active_eggs(self):
         return len(self.eggs)
 
-    def getHighestEgg(self):
-        highestEgg = None
+    def get_highest_egg(self):
+        highest_egg = None
         if len(self.eggs)>0:
-            highestEgg=self.eggs[0]
+            highest_egg=self.eggs[0]
 
         for egg in self.eggs:
-            if egg.eggy < highestEgg.eggy:
-                highestEgg = egg
-        return highestEgg
+            if egg.eggy < highest_egg.eggy:
+                highest_egg = egg
+        return highest_egg
 
-    def getLowestEgg(self):
+    def get_lowest_egg(self):
         lowestEgg = None
         if len(self.eggs) > 0:
             lowestEgg = self.eggs[0]
@@ -42,9 +47,9 @@ class EggSet:
                 lowestEgg = egg
         return lowestEgg
 
-    def addEgg(self, eggx):
-        self.totalDropped = self.totalDropped + 1
-        egg = Egg(eggx, self.dropHeight, self.basket, self.minSpeed, self.maxSpeed)
+    def add_egg(self, eggx):
+        self.total_dropped = self.total_dropped + 1
+        egg = Egg(eggx, self.drop_height, self.basket, self.min_speed, self.max_speed, self.egg_radius)
         self.eggs.append(egg)
 
     def update(self):
@@ -73,17 +78,18 @@ class EggSet:
                 self.eggs.remove(egg)
 
     def launch_more_eggs(self):
-        if self.waveCount == -1 and self.getHighestEgg().eggy > self.dropThreshold:
-            self.addEgg(randint(0.1 * self.basket.windowWidth, 0.9 * self.basket.windowWidth))
-        elif self.totalDropped < self.waveCount and self.activeEggs() < 3 and self.getHighestEgg().eggy > self.dropThreshold:
-            self.addEgg(randint(0.1 * self.basket.windowWidth, 0.9 * self.basket.windowWidth))
+        if self.wave_count == -1 and self.get_highest_egg() is not None and self.get_highest_egg().eggy > self.drop_threshold:
+            self.add_egg(randint(0.1 * self.basket.windowWidth, 0.9 * self.basket.windowWidth))
+        elif self.total_dropped < self.wave_count and self.active_eggs() < 3 and self.get_highest_egg().eggy > self.drop_threshold:
+            self.add_egg(randint(0.1 * self.basket.windowWidth, 0.9 * self.basket.windowWidth))
 
     def wave_over(self):
-        return self.totalDropped >= self.waveCount and len(self.eggs) == 0
+        return self.total_dropped >= self.wave_count and len(self.eggs) == 0
 
 class Egg:
 
-    def __init__(self, eggx, eggy, basket, minSpeed, maxSpeed):
+    def __init__(self, eggx, eggy, basket, minSpeed, maxSpeed, egg_radius):
+        self.egg_radius = egg_radius
         self.eggSpeed = minSpeed + (randint(0,10)/10.0 * (maxSpeed - minSpeed))
         self.eggx = eggx
         self.eggy = eggy
@@ -105,6 +111,6 @@ class Egg:
                                                                                                   self.basket.baskety))
 
                 self.broken = True
-            if self.basket.baskety - self.eggy < 6 and self.eggx > self.basket.basketx and self.eggx < self.basket.basketx + self.basket.cellWidth:
+            if self.basket.baskety - self.eggy < 1 and self.eggx > self.basket.basketx and self.eggx < self.basket.basketx + self.basket.cellWidth:
                 print("Egg Caught:  Egg at ({0},{1})  and basket at ({2},{3}) - ({4},{5})".format(self.eggx, self.eggy, self.basket.basketx, self.basket.baskety,self.basket.basketx + self.basket.cellWidth, self.basket.baskety ))
                 self.caught = True

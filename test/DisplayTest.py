@@ -41,6 +41,7 @@ class DisplayTest(unittest.TestCase):
         d.update_display()
         pygame.event.get()
         a = d.get_surface_array()
+        print("A = ".format(a))
         self.assertTrue(a.shape == (9, 3))
         for i in range(0, 9):
                 print("a[{0}]={1}".format(i, a[i]))
@@ -52,8 +53,10 @@ class DisplayTest(unittest.TestCase):
     def test_display_grayscale_array(self):
         d = Display(300,300,3,3,1)
         d.draw_checkerboard(0, 0, 3, 3, Display.WHITE, Display.BLACK)
+        d.update_display()
         a = d.get_surface_grayscale_array()
-        self.assertTrue(len(a) == 9)
+        print("A =".format(a))
+        self.assertTrue(a.size == 9)
         for i in range(0, 9):
             print(a[i])
             if (i % 2) == 0:
