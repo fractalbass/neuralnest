@@ -14,17 +14,17 @@ from Display import Display
 class EggTest(unittest.TestCase):
 
     def test_break_an_egg(self):
-        display = Display(800,800,80,80,20)
+        display = Display(800, 800, 80, 80, 20)
         basket = Basket(display)
         egg = Egg(40, 10, basket, 1, 2, 1)
 
         while not egg.broken:
             egg.update()
 
-        self.assertTrue(egg.eggy>basket.baskety)
+        self.assertTrue(egg.eggy > basket.basket_y)
 
     def test_break_some_eggs(self):
-        display = Display(800,800,80,80,20)
+        display = Display(800, 800, 80, 80, 20)
         basket = Basket(display)
         # observer, basket, drop_threshold, drop_height, wave_count, min_speed, max_speed):
         eggSet = EggSet(observer=None, basket=basket, drop_threshold=20,drop_height=3,wave_count=-1,min_speed=1,max_speed=2)

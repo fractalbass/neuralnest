@@ -3,11 +3,11 @@ import pygame
 class Basket:
 
     def __init__(self, display):
-        self.windowWidth = display.surface_width
-        self.windowHeight = display.surface_height
-        self.cellWidth = display.cell_width
-        self.basketx = int(self.windowWidth / 2.0)
-        self.baskety = int(self.windowHeight * 0.9)
+        self.surface_width = display.surface_width
+        self.surface_height = display.surface_height
+        self.cell_width = display.cell_width
+        self.basket_x = int(self.surface_width / 2.0)
+        self.basket_y = int(self.surface_height - 1)
         self.move_delta = int(display.cell_width/3)
 
     LEFT = 'left'
@@ -16,10 +16,10 @@ class Basket:
     def update(self, move):
         if move is not None:
             if move == self.LEFT:
-                self.basketx = self.basketx - self.move_delta
-                if self.basketx < 0:
-                    self.basketx = 0
+                self.basket_x = self.basket_x - self.move_delta
+                if self.basket_x < 0:
+                    self.basket_x = 0
             if move == self.RIGHT:
-                self.basketx = self.basketx + self.move_delta
-                if self.basketx > self.windowWidth - self.cellWidth:
-                    self.basketx = self.windowWidth - self.cellWidth
+                self.basket_x = self.basket_x + self.move_delta
+                if self.basket_x > self.surface_width - self.cell_width:
+                    self.basket_x = self.surface_width - self.cell_width

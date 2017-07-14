@@ -23,7 +23,7 @@ class Display:
         self.window_height = window_height
         self.text_surface = pygame.surface.Surface((window_width, self.text_surface_height), 0, 24)
         self.display_surface = pygame.surface.Surface((surface_width,surface_height))
-        self.display_window = pygame.display.set_mode((window_width,window_height), 0, 24)
+        self.display_window = pygame.display.set_mode((window_width,window_height+self.text_surface_height), 0, 24)
         pygame.display.set_caption('NeuralNest')
         self.display_surface.fill(self.BGCOLOR)
         pygame.display.update()
@@ -33,7 +33,7 @@ class Display:
 
         # Draw Basket
         if basket is not None:
-            self.draw_box(basket.basketx, basket.baskety, basket.cellWidth, 1, self.DARKGREEN)
+            self.draw_box(basket.basket_x, basket.basket_y, basket.cell_width, 1, self.WHITE)
 
         # Draw EggSet
         if egg_set is not None:
@@ -121,6 +121,7 @@ class Display:
     def get_surface_grayscale_array(self):
         gray_scale_array = []
         surface_array = pygame.surfarray.array3d(self.display_surface)
+        surface_array = surface_array.swapaxes(0, 1)
         new_surface = np.reshape(surface_array, (self.surface_width * self.surface_height, 3))
         for x in new_surface:
             c = ((int(x[0])+int(x[1])+int(x[2]))/(255*3))

@@ -65,7 +65,7 @@ class EggSet:
                 if self.observer is not None:
                     self.observer.caught()
                 self.eggs_were_caught=True
-                self.total_caught  = self.total_caught + 1
+                self.total_caught = self.total_caught + 1
                 if egg in self.eggs:
                     self.eggs.remove(egg)
 
@@ -78,10 +78,10 @@ class EggSet:
                 self.eggs.remove(egg)
 
     def launch_more_eggs(self):
-        if self.wave_count == -1 and self.get_highest_egg() is not None and self.get_highest_egg().eggy > self.drop_threshold:
-            self.add_egg(randint(0.1 * self.basket.windowWidth, 0.9 * self.basket.windowWidth))
+        if self.wave_count == -1 and ((self.get_highest_egg() is None) or (self.get_highest_egg() is not None and self.get_highest_egg().eggy > self.drop_threshold)):
+            self.add_egg(int(randint(0.1 * self.basket.surface_width, 0.9 * self.basket.surface_width)))
         elif self.total_dropped < self.wave_count and self.active_eggs() < 3 and self.get_highest_egg().eggy > self.drop_threshold:
-            self.add_egg(randint(0.1 * self.basket.windowWidth, 0.9 * self.basket.windowWidth))
+            self.add_egg(int(randint(0.1 * self.basket.surface_width, 0.9 * self.basket.surface_width)))
 
     def wave_over(self):
         return self.total_dropped >= self.wave_count and len(self.eggs) == 0
@@ -103,14 +103,15 @@ class Egg:
     def update(self):
         if not self.broken:
             self.eggy = self.eggy + self.eggSpeed
-            if self.eggy > self.basket.baskety:
-                print("Egg Broken:  Egg at ({0},{1})  and basket at ({2},{3}) - ({4},{5})".format(self.eggx, self.eggy,
-                                                                                                  self.basket.basketx,
-                                                                                                  self.basket.baskety,
-                                                                                                  self.basket.basketx + self.basket.cellWidth,
-                                                                                                  self.basket.baskety))
-
-                self.broken = True
-            if self.basket.baskety - self.eggy < 1 and self.eggx > self.basket.basketx and self.eggx < self.basket.basketx + self.basket.cellWidth:
-                print("Egg Caught:  Egg at ({0},{1})  and basket at ({2},{3}) - ({4},{5})".format(self.eggx, self.eggy, self.basket.basketx, self.basket.baskety,self.basket.basketx + self.basket.cellWidth, self.basket.baskety ))
+            if self.basket.basket_y - self.eggy < 1 and self.eggx >= self.basket.basket_x and self.eggx <= self.basket.basket_x + self.basket.cell_width:
                 self.caught = True
+                return
+
+            if self.eggy > self.basket.basket_y:
+                print("Egg Broken:  Egg at ({0},{1})  and basket at ({2},{3}) - ({4},{5})".format(self.eggx, self.eggy,
+                                                                                                  self.basket.basket_x,
+                                                                                                  self.basket.basket_y,
+                                                                                                  self.basket.basket_x + self.basket.cell_width,
+                                                                                                  self.basket.basket_y))
+                self.broken = True
+                return

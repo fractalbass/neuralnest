@@ -30,7 +30,7 @@ class NeuralNestAIPlayer:
                                 surface_width=20,
                                 surface_height=20,
                                 drop_height=0,
-                                drop_threshold=10,
+                                drop_threshold=17,
                                 basket_width=5,
                                 min_speed=1,
                                 max_speed=2,
@@ -39,7 +39,7 @@ class NeuralNestAIPlayer:
         pygame.display.update = self.function_combine(pygame.display.update, self.on_screen_update)
 
         print("Loading game")
-        caught, dropped = self.nnest.run(1000)
+        caught, dropped = self.nnest.run(300)
         self.training_data.save_csv("one_thousand_run.csv")
 
         print("Game complete: caught={0}  dropped={1}".format(caught, dropped))
@@ -65,7 +65,6 @@ class NeuralNestAIPlayer:
         if self.mode == self.PLAYING:
             surface_array = self.nnest.display.get_surface_grayscale_array()
             result = self.network.get_player_action(surface_array)
-            print("Network says: {0}".format(result))
         return result
 
     def caught(self):
@@ -76,9 +75,10 @@ class NeuralNestAIPlayer:
 
     def learn(self):
         network = GamePlayerNetwork(20, 20)
-        network.train("one_thousand_run.csv")
+        network.train("synthetic_training_data.txt")
         network.save_model("trained_model")
         network.display_training_results()
+        network.plot_model()
 
     def play(self):
         self.network = GamePlayerNetwork(20, 20)
@@ -90,7 +90,7 @@ class NeuralNestAIPlayer:
                                 surface_width=20,
                                 surface_height=20,
                                 drop_height=0,
-                                drop_threshold=10,
+                                drop_threshold=17,
                                 basket_width=5,
                                 min_speed=1,
                                 max_speed=2,
@@ -110,6 +110,6 @@ if __name__ == "__main__":
     ai_player = NeuralNestAIPlayer()
     ai_player.mode = NeuralNestAIPlayer.LEARNING
     # ai_player.gather_data(60)
-    ai_player.learn()
-    # ai_player.mode = 'playing'
-    # ai_player.play()
+    # ai_player.learn()
+    ai_player.mode = 'playing'
+    ai_player.play()

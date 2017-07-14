@@ -42,7 +42,9 @@ class NeuralNest:
     def runGame(self):
 
         self.basket = Basket(self.display)
-        self.eggSet = EggSet(observer=self, basket=self.basket, drop_threshold=self.drop_threshold, drop_height=self.drop_height, wave_count=self.wave_count, min_speed=self.min_speed, max_speed=self.max_speed, egg_radius=self.egg_radius)
+        self.eggSet = EggSet(observer=self, basket=self.basket, drop_threshold=self.drop_threshold,
+                             drop_height=self.drop_height, wave_count=self.wave_count, min_speed=self.min_speed,
+                             max_speed=self.max_speed, egg_radius=self.egg_radius)
         self.eggSet.add_egg(self.surface_width / 2)
         self.display.show_wave_start(None)
         clock = pygame.time.Clock()
@@ -60,7 +62,7 @@ class NeuralNest:
             self.basket.update(action)
             self.eggSet.update()
 
-            if self.eggSet.total_dropped<self.total_eggs:
+            if self.eggSet.total_dropped < self.total_eggs:
                 self.eggSet.launch_more_eggs()
 
             self.display.update(self.basket, self.eggSet)
@@ -75,22 +77,20 @@ class NeuralNest:
         return self.user.get_player_action()
 
     def get_best_player_action(self):
-        if self.eggSet is not None and self.eggSet.active_eggs()>0:
+        if self.eggSet is not None and self.eggSet.active_eggs() > 0:
             eggx = self.eggSet.get_lowest_egg().get_egg_x()
-            if eggx < self.basket.basketx + (self.basket.cellWidth/2):
-               return 0
+            if eggx < self.basket.basket_x:
+                return [1]
 
-            if eggx > self.basket.basketx + (self.basket.cellWidth / 2):
-                return 1
-        return 0.5
+            if eggx > self.basket.basket_x + self.basket.cell_width:
+                return [-1]
+        return [0]
 
     def caught(self):
-        print("Caught!!!!!!!")
         if self.observer is not None:
             self.observer.caught()
 
     def dropped(self):
-        print("Dropped!!!!!!")
         if self.observer is not None:
             self.observer.dropped()
 
@@ -101,7 +101,7 @@ if __name__ == "__main__":
                             surface_width=20,
                             surface_height=20,
                             drop_height=0,
-                            drop_threshold=10,
+                            drop_threshold=17,
                             basket_width=5,
                             min_speed=0.1,
                             max_speed=0.8,

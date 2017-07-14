@@ -2,6 +2,8 @@ import pandas as pd
 from keras.models import Model
 from keras.layers import Dense, Input
 from keras.models import model_from_json
+from keras import backend as K
+from User import User
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -12,8 +14,9 @@ class GamePlayerNetwork:
         self.update_learning_graph_count = 0
 
         inputs = Input(shape=(screen_width*screen_height,))
-        x = Dense(10, activation='sigmoid')(inputs)
-        predictions = Dense(1, activation='sigmoid')(x)
+        x = Dense(400, activation=K.sigmoid)(inputs)
+        #x = Dense(400, activation=K.sigmoid)(x)
+        predictions = Dense(1, activation=K.tanh)(x)
         model = Model(inputs=inputs, outputs=predictions)
         model.summary()
         model.compile(optimizer='rmsprop',
@@ -26,8 +29,8 @@ class GamePlayerNetwork:
     def train(self, filename):
         df = pd.read_csv(filename)
         training_set = df.values[:, 0:400]
-        target_set = df.values[:,401]
-        self.results = self.model.fit(training_set, target_set, batch_size=100, epochs=5000, verbose=1)
+        target_set = df.values[:,-1]
+        self.results = self.model.fit(training_set, target_set, batch_size=100, epochs=2000)
 
     def save_model(self, filename):
         # serialize model to JSON
@@ -60,12 +63,10 @@ class GamePlayerNetwork:
 
     def get_player_action(self, screen_array):
 
-        o = self.model.predict(screen_array.reshape(1,400), batch_size=10, verbose=1)
-
-        if o<0.5:
-            return 'left'
-        elif o>=0.5:
-            return 'right'
-        else:
-            return None
-
+        o = self.model.predict(screen_array.reshape(1, 400))[0][0]
+        result = None
+        if o <= -0.5:
+            result = User.LEFT
+        elif o >= 0.5:
+            result = User.RIGHT
+        return result
