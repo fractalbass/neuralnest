@@ -5,7 +5,7 @@ from EggSet import EggSet
 from User import User
 
 class NeuralNest:
-    FPS = 16
+    FPS = 30
 
     QUIT = 'quit'
 
